@@ -1,0 +1,16 @@
+body{
+	background-color: #63fb0f42;
+}
+
+p{
+	border: 2px solid #dce4175c;
+	padding: 10px;
+	border-radius: 10px;
+}
+.border_set{
+	background-color: rgba(0,0,,0.4);
+	margin-top: 30px;
+	padding: 20px;
+	border: 2px solid #ffc3004d;
+	border-radius: 10px;
+}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Applay Leave</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/user_assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/custom-styles.css" rel="stylesheet" />
+   	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+   	<style type="text/css">
+	   	::-webkit-scrollbar {
+	   		width: 4px;
+	   	}
+	   	div ::-webkit-scrollbar-thumb {
+			background: #0008ff; 
+			border-radius: 10px;
+		}
+		::-webkit-scrollbar-track {
+			box-shadow: inset 0 0 5px grey; 
+			border-radius: 10px;
+		}
+   	</style>
+</head>
+<body>
+
+
+<!-- ======================================== message box ======================================================================== -->
+
+<div class="modal fade in" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content modal-footer modal-header" style="background-color:#F8F8FF;">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="document.getElementById('messagebox').style.display='none';">&times;</button>
+            <h4 class="modal-title" id="myModalLabel" style="text-align: center;"><b>Message</b></h4>
+            <div class="modal-body" id="message" style="text-align: center;"></div>
+            <button type="button" class="btn btn-success" data-dismiss="modal" id="btn_submit" onclick="form1.submit();document.getElementById('messagebox').style.display='none';">Yes</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_submit" onclick="document.getElementById('messagebox').style.display='none';">No</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================================================================================== -->
+
+
+
+
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../user_home"><i class="fa fa-home"></i> <strong>Home</strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="../User_profile/"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li class="divider"></li><li><a href="">
+                            <form method="POST">
+                                {%csrf_token%}
+                                <div class="row">
+                                    <div class="col-md-1" style="padding: 8px;"><i class="fa fa-sign-out fa-fw"></i></div>
+                                    <div class="col-md-5"><input type="submit" name="logout" value="Logout" class="form-control" style="border:none;box-shadow: none;margin: 0px;"></div>
+                                </div>
+                            </form>
+                        </li></a>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+
+                    <li>
+                        <a href="../user_home"><i class="fa fa-dashboard"></i> Home</a>
+                    </li>
+					<li>
+                        <a href="../User_profile/"><i class="fa fa-bar-chart-o"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/leave_history"><i class="fa fa-qrcode"></i> Leave History</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/User_profile_edit" ><i class="fa fa-table"></i> Edit Profile</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/Applay_Leave" class="active-menu"><i class="fa fa-edit"></i> Leave Forms </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div id="page-wrapper">
+            <div id="page-inner" style="background: linear-gradient(to top left, #ffffff -21%, #00ccff 123%);border-radius: 10px;top:100px;">
+
+
+            	<div class="row">
+            		<div class="col-md-4" style="text-align: center;align-content: center;">
+            			<img src="/static/img/demoimg1.gif" style="height: 100%;width: 100%;border-radius: 10px;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);"><br>
+            			<label style="text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;">{{name|safe}}</label>
+            		</div>
+            		<div class="col-md-8">
+            			<div style="background: linear-gradient(to bottom right, #dddfe6 -21%, #00c4ff 123%);border-radius: 10px;padding: 5px;margin-bottom: 10px;margin-top: 20px;box-shadow: 3px 2px 2px black;height: 120px;overflow: auto;">
+            				<label><u>Pending Leaves</u></label><br>
+            				<label style="margin-left: 10px;">{{pending|safe}}</label>
+            			</div>
+            			<div style="background: linear-gradient(to bottom right, #0144ff9e -21%, #22fddf 123%);border-radius: 10px;padding: 5px;margin-bottom: 10px;box-shadow: 3px 2px 2px black;">
+            				<label><u>Last Leave</u></label><br>
+            				<label style="margin-left: 10px;">{{lastleave|safe}}</label>
+            			</div>
+            		</div>
+            	</div>
+            	<hr style="border-top: 3px double #8c8b8b;">
+            	<form method="POST" id="form1">
+            		{%csrf_token%}
+	            	<div class="row">
+	            		<div class="col-md-6" >
+	            			<div style="text-align: center;"><br><label style="font-size: 15px;font-weight: bolder;text-shadow: 1px 1px 1px black;">Leave Form</label></div>
+	            			<div class="row" style="margin-left: 10px;">
+	            				<div class="col-md-6">
+	            					<label>Leave Type</label>
+	            					<select name="levae_type" class="form-control" selected=none required="">
+	            						<option disabled selected value >Select Leave Type</option>
+	            						<option>Sick Leave</option>
+	            						<option>Privilege/Annual Leave</option>
+	            						<option>Marriage Leave</option>
+	            						<option>Maternity Leave</option>
+	            					</select>
+	            					<label>Reason</label>
+	            					<textarea class="form-control" name="reason" rows="4" placeholder="State Your Reason"></textarea>
+	            				</div>
+	            				<div class="col-md-6">
+	            					<label>From</label>
+	            					<input type="date" name="from_date" class="form-control">
+	            					<label>To</label>
+	            					<input type="date" name="to_date" class="form-control"><br>
+	            					<!-- <input type="submit" name="btn_submit" id="btn_sub" value="Submit" onclick="msg()" class="form-control btn-success"> -->
+	            					<button class="form-control btn-success" id="btn_sub">Submit</button>
+	            				</div>
+	            			</div>
+	            		</div>
+	            		<div class="col-md-6" style="border-left: 1px solid #003366 ;">
+	            			<div style="text-align: center;"><br><label style="font-size: 15px;font-weight: bolder;text-shadow: 1px 1px 1px black;">History</label></div>
+	            			<div class="row" style="margin:4px 5px;height: 250px; overflow: auto;border-radius: 10px;">
+	            				{% for i in q %}
+		            			<div style='background: linear-gradient(to bottom right, #66ffcc -21%, #2f669e 123%);border-radius: 10px;padding: 7px;margin-bottom: 10px;box-shadow: 2px 5px 5px black;'>
+		            				<label style='font-weight: bolder;text-shadow: 0px 0px .5px black;'>{{i.l_type}} : From {{ i.l_from }} to {{ i.l_to }}</label><br>
+		            				<label style='margin-left: 10px;'>{{ i.l_reason }}</label>
+		            			</div>
+		            			{% endfor %}
+
+	            			</div>
+	            		</div>
+	            	</div>
+	            </form>
+
+            </div>
+        </div>
+    <script src="/static/user_assets/js/jquery-1.10.2.js"></script>
+    <script src="/static/user_assets/js/bootstrap.min.js"></script>
+    <script src="/static/user_assets/js/jquery.metisMenu.js"></script>
+    <script src="/static/user_assets/js/custom-scripts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+
+
+    	$("#btn_sub").click(function(e){
+    		e.preventDefault();
+    		$.ajax({
+    			url:"../User_profile/msg",
+    			type:"POST",
+    			dataType:"json",
+    			data:$("#form1").serialize(),
+    			success:function(data){
+    				if(data.status){
+    					document.getElementById("messagebox").style.display='block';
+    					$("#message").html(data.ans)
+    					// alert(data.ans);
+    				}
+    				else{
+    					alert(data.ans);
+    				}
+    			},
+    			error:function(){
+    				alert("Please Check The Details You have Entered.!!!");
+    			}
+    		});
+    	});
+    </script>
+   
+</body>
+</html>

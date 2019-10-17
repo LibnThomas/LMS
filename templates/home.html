@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leave Management System</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="/static/css/style.css">
+	<style type="text/css">
+		.popupwindow {
+		  display: none; /* Hidden by default */
+		  position: fixed; /* Stay in place */
+		  z-index: 1; /* Sit on top */
+		  padding-top: 100px; /* Location of the box */
+		  left: 0;
+		  top: 0;
+		  width: 100%; /* Full width */
+		  height: 100%; /* Full height */
+		  overflow: auto; /* Enable scroll if needed */
+		  background-color: rgb(0,0,0); /* Fallback color */
+		  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+		  text-align: center;
+		}
+
+		/* Modal Content */
+		.popup-content {
+		  background-color: #fefefe;
+		  border: 4px solid #dadada;
+		  border-radius: 20px;
+		  /*background-color: rgba(0,0,0,0.8);*/
+		  margin: auto;
+		  padding: 20px;
+		  border: 1px solid #888;
+		  width: 50%;
+		}
+		.close {
+		  color: red;
+		  font-size: 28px;
+		  font-weight: bold;
+		}
+
+		.close:hover,
+		.close:focus {
+		  color: #000;
+		  text-decoration: none;
+		  cursor: pointer;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="row" style="text-align: center;">
+		<div class="col-lg-3 col-md-3 col-sm-3"></div>
+		<div class="col-lg-6 col-md-6 col-sm-6 border_set">
+			<h3>Leave Instructions</h3>
+			<h6><u>Type of leaves</u></h6><br>
+			<p><b>Sick Leave:</b><br> Max 12 Leaves can be applied in a calender year, without manager approval</p><br>
+			<p><b>Privilege/Annual Leave:</b><br> Max 12 Leaves can be applied in a calender year. Manager needs to approve these leaves. If an employee is applying for leave for a Monday then Saturday and Sunday will also be considered as leaves.</p><br>
+			<p><b>Marriage Leave:</b><br> Max of 5 days can be availed under this category. Manager approval is needed for this</p><br>
+			<p><b>Maternity Leave:</b><br> One Month leave can be availed for this and Manager needs to approve these</p><br>
+			
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-3" style="padding: 40px;">
+			<img src="/static/img/avatar.png" style="height: 200px;width: 200px;padding: 30px;">
+			<h5><font color="green">Login</font></h5>
+			<h6><font color="red">{{msg|safe}}</font></h6>
+			<form method="POST">
+				{%csrf_token%}
+				<input type="text" name="unam" class="form-control" placeholder="User Name"><br>
+				<input type="password" name="pass" class="form-control" placeholder="Password"><br>
+				<input type="submit" name="login" value="Login" class="form-control btn-success"><br>
+			</form>
+			<input type="submit" name="login" value="Sign Up" class="form-control btn-primary" onclick="document.getElementById('popupwindow').style.display='block';">
+		</div>
+		<div class="popupwindow" id="popupwindow">
+			<div class="popup-content">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<span class="close" onclick="document.getElementById('popupwindow').style.display='none';" style="float: right;display: inline;">&times;</span>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12" id="signup" style="text-align: center;">
+						<form method="POST">
+							{%csrf_token%}
+							<h5><font color="">Sign UP</font></h5><br>
+							<input type="text" class="form-control" name="fname" placeholder="First Name"><br>
+							<input type="text" class="form-control" name="lname" placeholder="Last Name"><br>
+							<input type="text" class="form-control" name="uname" placeholder="User Name"><br>
+							<input type="password" class="form-control" name="pass" placeholder="Password"><br>
+							<input type="password" class="form-control" name="conf_pass" placeholder="Confirm Password"><br>
+							<input type="submit" class="form-control btn-success" name="btn_signin" value="Sign Up">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

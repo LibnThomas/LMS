@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Home</title>
+    <link href="/static/user_assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/custom-styles.css" rel="stylesheet" />
+   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+   <style type="text/css">
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        div ::-webkit-scrollbar-thumb {
+            background: lightblue; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey; 
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../user_home"><i class="fa fa-home"></i> <strong>Home</strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="../User_profile/"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="">
+                            <form method="POST">
+                                {%csrf_token%}
+                                <div class="row">
+                                    <div class="col-md-1" style="padding: 8px;"><i class="fa fa-sign-out fa-fw"></i></div>
+                                    <div class="col-md-5"><input type="submit" name="logout" value="Logout" class="form-control" style="border:none;box-shadow: none;margin: 0px;"></div>
+                                </div>
+                            </form>
+                        </li></a>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+
+                    <li>
+                        <a href="../user_home"><i class="fa fa-dashboard"></i> Home</a>
+                    </li>
+					<li>
+                        <a href="../User_profile/" class="active-menu"><i class="fa fa-bar-chart-o"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/leave_history"><i class="fa fa-qrcode"></i> Leave History</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/User_profile_edit"><i class="fa fa-table"></i> Edit Profile</a>
+                    </li>
+                    <li>
+                        <a href="../User_profile/Applay_Leave"><i class="fa fa-edit"></i> Leave Forms </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div id="page-wrapper" >
+            <div id="page-inner">
+			     <div class="row">
+                    <!-- <div class="col-md-12" style="background-color: white;border-radius: 10px;text-align: center;font-weight: bold;font-size: 20px;"> -->
+                    <div class="col-md-12" style="background: linear-gradient(to top left, #ffffff -21%, #00ccff 123%);border-radius: 10px;text-align: center;font-weight: bold;font-size: 20px;">
+
+
+                        <!-- body of the profile page -->
+                        <div class="row">
+                            <div class="col-12" style="text-align: center;font-size: 30px;font-weight: bolder;">
+                                Your Profile
+                            </div>
+                            <div class="col-12" style="text-align: center; align-items: center;font-weight: bolder;font-size: 30px;border-bottom: 1px solid black;">
+                                <img src="/static/img/avatar.png" style="background: linear-gradient(to bottom left, #fafafa 0%, #dadada 100%);border-radius: 50%;height: 150px;width: 150px;"><br>
+                                <label style="text-shadow: 2px 2px 4px black;"><font color="black">{{name|safe}}</font></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" style="padding-left: 50px;padding-top: 20px;font-size: 20px;font-weight: bold;text-align: left;">
+                                <div class="row">
+                                    <div class="col-md-6">Name</div>
+                                    <div class="col-md-6"><label>{{name|safe}}</label></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">Address</div>
+                                    <div class="col-md-6"><label>{{address|safe}}</label></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">DOB</div>
+                                    <div class="col-md-6"><label>{{dob|safe}}</label></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">Email</div>
+                                    <div class="col-md-6"><label>{{email|safe}}</label></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">Phone</div>
+                                    <div class="col-md-6"><label>{{number|safe}}</label></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="padding-left: 50px;padding-top: 20px;font-size: 20px;font-weight: bold;text-align: left;">
+                                <div class="row">
+                                    <div class="col-md-6">Type</div>
+                                    <div class="col-md-6"><label>{{typ|safe}}</label></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">Quote</div>
+                                    <div class="col-md-6"><label>{{quote|safe}}</label></div>
+                                </div>
+                            </div>
+                        </div><br>
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="/static/user_assets/js/jquery-1.10.2.js"></script>
+    <script src="/static/user_assets/js/bootstrap.min.js"></script>
+    <script src="/static/user_assets/js/jquery.metisMenu.js"></script>
+    <script src="/static/user_assets/js/custom-scripts.js"></script>
+    
+   
+</body>
+</html>

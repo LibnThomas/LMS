@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<style type="text/css">
+		.sidenav {
+			height: 100%;
+			width: 260px;
+			position: fixed;
+			z-index: 1;
+			top: 45px;
+			/*left: 0;*/
+
+			background: linear-gradient(to left, #cc0066 -1%, #660033 100%);
+			overflow-x: hidden;
+			padding-top: 20px;
+			box-shadow: 2px 2px 10px black;
+		}
+
+		.sidenav a {
+			padding: 6px 8px 6px 16px;
+			text-decoration: none;
+			font-size: 25px;
+			color: #818181;
+			display: block;
+		}
+
+		.sidenav a:hover {
+			color: #f1f1f1;
+		}
+
+		.main {
+			margin-left: 260px; /* Same as the width of the sidenav */
+			font-size: 28px; /* Increased text to enable scrolling */
+			padding: 0px 10px;
+		}
+
+		@media screen and (max-height: 450px) {
+			.sidenav {padding-top: 15px;}
+			.sidenav a {font-size: 18px;}
+		}
+
+		.top_nav {
+			background: linear-gradient(to bottom, #800000 -1%, #660033 100%);
+			color: white;
+			padding: 20px;
+			border: none;
+
+			margin: -10px -10px 0px 0px;
+			height: 55px;
+		}
+
+		.top_nav label{
+			margin-left: 10px;
+		}
+
+		.top_nav label:hover{
+			color: #00ff08	;
+		}
+		.main label{
+			text-shadow: 0px 0px 10px black;
+		}
+	</style>
+</head>
+<body>
+	<div class="sidenav">
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12" style="text-align: center;align-items: center;">
+				<img src="/static/img/avatar.png" style="background-color: white;border-radius: 50%;height: 90px;width: 90px;"><br>
+				<label><font color="white">Libin Thomas</font></label>
+			</div>
+		</div>
+		<a href="#">Profile</a>
+		<a href="#">New Leave</a>
+		<a href="#">Previous Leaves</a>
+		<a href="#">Contact</a>
+	</div>
+	<div class="top_nav">
+		<img style="height: 30px;width: 30px;float: right;" src="/static/img/user.png">
+		<label style="margin-top: -10px;font-weight: bolder;cursor: pointer;" onclick="#"><img src="/static/img/Home.png" style=" height: 50px;width: 50px;">Home</label>
+	</div>
+	<div class="row main" style="background-color: white;" id="pag_content">
+		<div class="col-lg-12 col-md-12 col-sm-12" style="text-align: center;padding: 20px;">
+			<h4>Your Profile</h4>
+			<div class="row">
+				<div class="col-lg-1 col-md-1 col-sm-1"></div>	
+				<div class="col-lg-10 col-md-10 col-sm-10">
