@@ -1,7 +1,7 @@
 from django.db import models
 import datetime
 from django.utils.timezone import now
-
+import os
 # from datetime import datetime
 # Create your models here.
 
@@ -25,13 +25,17 @@ class tbl_leave(models.Model):
 	class Meta:
 		db_table="tbl_leave"
 			
+def imgAuth(instance,filename):
+	ex=filename.split(".")[-1]
+	name1="img/"+str(instance.emp_id)+"."+ex
+	return name1
 
 class tbl_profile(models.Model):
 	emp_id=models.IntegerField()
-	emp_img=models.ImageField(upload_to='img/')
+	emp_img=models.ImageField(upload_to=imgAuth)
 	emp_dob=models.DateField(default=datetime.date.today)
 	emp_email=models.CharField(max_length=50)
-	emp_phone=models.IntegerField(null=True)
+	emp_phone=models.CharField(max_length=15)
 	emp_address=models.CharField(max_length=200)
 	emp_type=models.CharField(max_length=50)
 	emp_discriptin=models.CharField(max_length=200)

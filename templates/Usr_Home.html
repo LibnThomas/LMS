@@ -33,7 +33,7 @@
         }
 
         tr:hover {
-            background-color:#f5f5f5;
+            background-color:#becbd4;
             border-radius: 20px;
         }
    	</style>
@@ -123,7 +123,7 @@
 
             	<div class="row">
             		<div class="col-md-4" style="text-align: center;align-content: center;">
-            			<img src="/static/img/demoimg1.gif" style="height: 90px;width: 90px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%); border: 3px solid black;">
+            			<img src="/media/{{u_img}}" style="height: 90px;width: 90px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%); border: 3px solid black;">
             			<label style="text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;">{{name|safe}}</label>
             		</div>
             	</div>
@@ -132,8 +132,8 @@
             		<!-- {%csrf_token%} -->
                     <div class="row">
                         <div class="col-md-6">
-                            Total Number of Leaves Taken in This current Year : <label style="color: green;">{{l_acc|safe}}20</label><br>
-                            Total Number of Leaves Rejected in This current Year : <label style="color: red;">{{l_rej|safe}}20</label>
+                            Total Number of Leaves Taken in This current Year : <label style="color: green;">{{l_acc|safe}}</label><br>
+                            Total Number of Leaves Rejected in This current Year : <label style="color: red;">{{l_rej|safe}}</label>
                         </div>
                         <div class="col-md-6">
                             <div  style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;margin-right: 5px;height: 200px;overflow: auto;">
@@ -161,47 +161,51 @@
                     </div><br>
                     <hr style="border-top: 3px double #8c8b8b;">
                     <div class="row" style="padding: 10px;">
-                        <div class="col-md-6"  style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;height: 200px;overflow: auto;">
-                            <label>Recentely Accepted Leaves</label>
-                            <table>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th>Reason</th>
-                                    <th>Days</th>
-                                </tr>
-                                {% for i in accepted %}
-                                <tr style="border-radius: 10px;">
-                                    <td>{{i.l_type}}</td>
-                                    <td>{{i.l_from}}</td>
-                                    <td>{{i.l_to}}</td>
-                                    <td>{{i.l_reason}}</td>
-                                    <td>{{i.l_days}}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
+                        <div class="col-md-6">
+                            <div style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;height: 200px;overflow: auto;">
+                                <label>Recentely Accepted Leaves</label>
+                                <table>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Reason</th>
+                                        <th>Days</th>
+                                    </tr>
+                                    {% for i in accepted %}
+                                    <tr style="border-radius: 10px;">
+                                        <td>{{i.l_type}}</td>
+                                        <td>{{i.l_from}}</td>
+                                        <td>{{i.l_to}}</td>
+                                        <td>{{i.l_reason}}</td>
+                                        <td>{{i.l_days}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-md-6"  style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;height: 200px;overflow: auto;">
-                            <label>Recentely Rejected Leaves</label>
-                            <table>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th>Reason</th>
-                                    <th>Days</th>
-                                </tr>
-                                {% for i in reject %}
-                                <tr style="border-radius: 10px;">
-                                    <td>{{i.l_type}}</td>
-                                    <td>{{i.l_from}}</td>
-                                    <td>{{i.l_to}}</td>
-                                    <td>{{i.l_reason}}</td>
-                                    <td>{{i.l_days}}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
+                        <div class="col-md-6">
+                            <div style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;height: 200px;overflow: auto;">
+                                <label>Recentely Rejected Leaves</label>
+                                <table>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Reason</th>
+                                        <th>Days</th>
+                                    </tr>
+                                    {% for i in reject %}
+                                    <tr style="border-radius: 10px;">
+                                        <td>{{i.l_type}}</td>
+                                        <td>{{i.l_from}}</td>
+                                        <td>{{i.l_to}}</td>
+                                        <td>{{i.l_reason}}</td>
+                                        <td>{{i.l_days}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
                         </div>
                     </div>
 

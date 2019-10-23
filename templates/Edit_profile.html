@@ -81,7 +81,7 @@
         <div id="page-wrapper" >
             <div id="page-inner" style="border-radius: 10px;top:100px;">
 			     <div class="row">
-                    <div class="col-md-12" style="background: linear-gradient(to top left, #ffffff -21%, #00ccff 123%);border-radius: 10px;text-align: center;font-weight: bold;font-size: 20px;">
+                    <div class="col-md-12" style="background: linear-gradient(to top left, #23c1cd -21%, #25c3ce 123%);border-radius: 10px;text-align: center;font-weight: bold;font-size: 20px;">
 
 
                         <!-- body of the profile page -->
@@ -90,7 +90,7 @@
                                 Your Profile
                             </div>
                             <div class="col-12" style="text-align: center; align-items: center;font-weight: bolder;font-size: 30px;border-bottom: 1px solid black;">
-                                <img src="/static/img/avatar.png" style="background: linear-gradient(to bottom left, #fafafa 0%, #dadada 100%);border-radius: 50%;height: 150px;width: 150px;"><br>
+                                <img src="/media/{{u_img}}" style="background: linear-gradient(to bottom left, #fafafa 0%, #dadada 100%);border-radius: 50%;height: 150px;width: 150px;"><br>
                                 <label style="text-shadow: 2px 2px 4px black;"><font color="black">{{name|safe}}</font></label>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                                         <div class="col-md-4">Type</div>
                                         <div class="col-md-8">
                                             <select name="type" class="form-control" required="" style="margin-bottom: 5px;">
-                                                <option disabled selected value>Select Type</option>
+                                                <option value="{{typ}}">{{typ}}</option>
                                                 <option value="Permanent">Permanent</option>
                                                 <option value="Part Time">Part Time</option>
                                             </select>
@@ -147,7 +147,7 @@
                             </div><br>
                             <div class="row">
                                 <div class="col-md-6"></div>
-                                <div class="col-md-6"><button class="form-control btn-info" style="width: 50%;float: right;" name="btn_update">Update</button></div>
+                                <div class="col-md-6"><button class="form-control btn-success" style="width: 50%;float: right;" name="btn_update">Update</button></div>
                             </div><br>
                         </form>
 
