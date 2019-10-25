@@ -6,6 +6,7 @@ from leave_management_system import views
 
 urlpatterns=[
 	path('',views.login1,name="login1"),
+	path('Admin',views.p_admin,name="Main_Admin"),
 	path('admin_home',views.admin_home,name="admin_home"),
 	path('User_profile/',views.userprofile,name="userprofile"),
 	path('user_home',views.user_home,name="user_home"),

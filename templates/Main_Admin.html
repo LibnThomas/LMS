@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admin Home</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/user_assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="/static/user_assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"> -->
+   	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+   	<style type="text/css">
+	   	::-webkit-scrollbar {
+	   		width: 4px;
+	   	}
+	   	div ::-webkit-scrollbar-thumb {
+			background: lightblue; 
+			border-radius: 10px;
+		}
+		::-webkit-scrollbar-track {
+			box-shadow: inset 0 0 5px grey; 
+			border-radius: 10px;
+		}
+
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+
+        th, td {
+          padding: 8px; 
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color:#00edff;
+            border-radius: 20px;
+        }
+   	</style>
+</head>
+<body>
+
+{%csrf_token%}
+<!-- ======================================== message box ======================================================================== -->
+
+<div class="modal fade in" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display: {{display}}">
+    <div class="modal-dialog">
+        <div class="modal-content modal-footer modal-header" style="background: linear-gradient(to top left, #a0ffc3 -21%, #79d4ea 123%);border-radius: 10px;top: 60px;">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="document.getElementById('messagebox').style.display='none';">&times;</button>
+            <h4 class="modal-title" id="myModalLabel" style="text-align: center;"><b>Profile</b></h4>
+            <div class="modal-body" id="message" style="text-align: center;">
+                {{ans|safe}}
+            </div>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_submit" onclick="document.getElementById('messagebox').style.display='none';">OK</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade in" id="reject_box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content modal-footer modal-header" style="background: linear-gradient(to top left, #ffdc30 -21%, #ffd194 123%);border-radius: 10px;top: 60px;">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="document.getElementById('reject_box').style.display='none';">&times;</button>
+            <form method="POST">
+                {%csrf_token%}
+                <h4 class="modal-title" id="reject_head" style="text-align: center;"><b>Reason</b></h4>
+                <div class="modal-body" id="reject_body" style="text-align: center;">
+                    <textarea class="form-control" rows="5" name="reject_reason" required="" placeholder="Reason For Rejection"></textarea>
+                </div>
+                <button class="btn btn-danger" data-dismiss="modal" name="btn_reject" value="" id="btn_reject" onclick="document.getElementById('reject_box').style.display='none';">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================================================================================== -->
+
+
+
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../Admin"><i class="fa fa-home"></i> <strong>Admin Home</strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li class="divider"></li>
+                        <li><a href="">
+                            <form method="POST">
+                                {%csrf_token%}
+                                <div class="row">
+                                    <div class="col-md-1" style="padding: 8px;"><i class="fa fa-sign-out fa-fw"></i></div>
+                                    <div class="col-md-5"><input type="submit" name="logout" value="Logout" class="form-control" style="border:none;box-shadow: none;margin: 0px;"></div>
+                                </div>
+                            </form>
+                        </li></a>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <div style="background: #22c0cc;padding: 20px;">
+            <div style="border-radius: 10px;top:100px;">
+            	<div class="row" style="padding-top: 50px;"></div>
+            	<hr style="border-top: 3px double #8c8b8b;">
+	            	<table>
+                        <tr>
+                            <th>Name</th>
+                            <th>User Name</th>
+                            <th>Type</th>
+                            <th>Registered Date</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <form method="POST">
+                            {%csrf_token%}
+                            {{ans|safe}}
+                        </form>
+                    </table>
+            </div>
+        </div>
+    <script src="/static/user_assets/js/jquery-1.10.2.js"></script>
+    <script src="/static/user_assets/js/bootstrap.min.js"></script>
+    <script src="/static/user_assets/js/jquery.metisMenu.js"></script>
+    <script src="/static/user_assets/js/custom-scripts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+</body>
+</html>

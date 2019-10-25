@@ -1,6 +1,7 @@
 from django.db import models
 import datetime
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 import os
 # from datetime import datetime
 # Create your models here.
@@ -40,6 +41,9 @@ class tbl_profile(models.Model):
 	emp_type=models.CharField(max_length=50)
 	emp_discriptin=models.CharField(max_length=200)
 	emp_last_edit=models.DateField(default=datetime.date.today)
+	emp_auth=models.CharField(max_length=10)
+	status=models.CharField(max_length=10)
+	# emp_user_auth=models.OneToOneField(User, )
 
 	class Meta:
 		db_table="tbl_profile"

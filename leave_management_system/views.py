@@ -15,26 +15,17 @@ from django.utils.timezone import now
 
 def userauth(request):
 	print(request.POST)
-	# print("session value name",request.session["user_username"])
-	# print("Session values in username :",request.session.get("user_username"))
 	st=True
-	print("token 2")
 	if (request.user.is_authenticated):
 		loguser=request.user.first_name+" "+request.user.last_name
 		print("User :"+request.user.first_name+" "+request.user.last_name)
 	else:
-		print("token 6")
 		st=False
-		# return redirect('login1')
-		print("token 7")
 		
 	if(request.POST.get("logout")!=None):
-		print(request.session.keys())
-		print("token 4")
-		del request.session["user_username"]
+		request.session.flush()
 		logout(request)
 		st=False
-		print("token 8")
 	return st
 
 def login1(request):
@@ -44,35 +35,38 @@ def login1(request):
 		if(request.POST.get("login")!=None):
 			user=authenticate(username=request.POST["unam"],password=request.POST["pass"])
 			if(user!=None):
-				# login(request,user)
-
-				q=User.objects.filter(username=request.POST['unam'])
-				for i in q:
-					name=i.first_name+" "+i.last_name
-
-				if(user.is_superuser):
-
-					print("Session values in username admin :",request.session.get("user_username"))
-					if(request.session.get("user_username")!=None):
-						print(request.session)
-						return render(request,"home.html",{"msg":"One Session is already Running"})
-					else:
+				q=User.objects.get(username=request.POST['unam'])
+				name=q.first_name+" "+q.last_name
+				q2=tbl_profile.objects.get(emp_id=q.id)
+				if(q2.emp_auth=="Manager"):
+					if(q2.status=="Approved"):
+						# if(request.session.get("user_username")!=None):
+						# 	return render(request,"home.html",{"msg":"One Session is already Running"})
+						# else:
 						request.session['user_username']=name
+					else:
+						return render(request,"home.html",{"msg":"Your Request is "+q2.status})
 
 					login(request,user)
-					print(request.session["user_username"])
 					return redirect("admin_home")
-				else:
-					print("Session values in username user :",request.session.get("user_username"))
-					if(request.session.get("user_username")!=None):
-						print(request.session)
-						return render(request,"home.html",{"msg":"One Session is already Running"})
-					else:
+				elif(q2.emp_auth=="Staff"):
+					if(q2.status=="Approved"):
+						# if(request.session.get("user_username")!=None):
+						# 	return render(request,"home.html",{"msg":"One Session is already Running"})
+						# else:
 						request.session['user_username']=name
-
+					else:
+						return render(request,"home.html",{"msg":"Your Request is "+q2.status})
 					login(request,user)
-					print(request.session["user_username"])	
 					return redirect("user_home")
+				elif(User.is_superuser):
+					# if(request.session.get("user_username")!=None):
+					# 	return render(request,"home.html",{"msg":"One Session is already Running"})
+					# else:
+					request.session['user_username']=name
+					login(request,user)
+					return redirect("Main_Admin")
+
 			else:
 				return render(request,"home.html",{"msg":"Incorrect User Name/Password"})
 
@@ -82,8 +76,12 @@ def login1(request):
 				return render(request,"home.html",{"msg":"User Name Exists"})
 			except:
 				if(request.POST["pass"]==request.POST["conf_pass"]):
+					typ=request.POST.getlist("stafftype",None)[0]
 					q=User.objects.create_user(username=request.POST["uname"],password=request.POST["pass"],first_name=request.POST["fname"],last_name=request.POST["lname"])
 					q.save()
+					qq=User.objects.get(username=request.POST["uname"])
+					q1=tbl_profile.objects.create(emp_id=qq.id,emp_auth=request.POST.getlist("stafftype",None)[0],status="Pending")
+					q1.save()
 				else:
 					return render(request,"home.html",{"msg":"Password Doesn't Match"})
 
@@ -92,53 +90,94 @@ def login1(request):
 		print("error : ",e)
 		return render(request,'home.html')
 
+# @login_required # djagno decorator for check user authentication
+def p_admin(request):
+	if(userauth(request)):
+		if(request.POST.get("btn_approve")):
+			q1=tbl_profile.objects.get(id=request.POST["btn_approve"])
+			q1.status="Approved"
+			q1.save()
+		if(request.POST.get("btn_reject")):
+			q1=tbl_profile.objects.get(id=request.POST["btn_reject"])
+			q1.status="Rejected"
+			q1.save()
+
+		q=tbl_profile.objects.filter(status="Pending").order_by("-id")
+		ans=""
+		for i in q:
+			q1=User.objects.get(id=i.emp_id)
+			ans=ans+"<tr style='border-radius: 10px;'><td>"+q1.first_name+q1.last_name+"</td><td>"+q1.username+"</td><td>"+i.emp_auth+"</td><td>"+str(q1.date_joined)+"</td><td><button class='form-control btn-success' name='btn_approve' value='"+str(i.id)+"'>Approve</button></td><td><button class='form-control btn-danger' name='btn_reject' value='"+str(i.id)+"'>Reject</button></td></tr>"
+
+		return render(request,'Main_Admin.html',{"ans":ans})
+	else:
+		return redirect('login1')
+
 def admin_home(request):
 	if(userauth(request)):
 		try:
-			print(request.POST)
-
 			q=tbl_leave.objects.filter(l_status="Approved").order_by("-id")
 			q1=tbl_leave.objects.filter(l_status="Pending").order_by("-id")
 			q2=tbl_leave.objects.filter(l_status="Rejected").order_by("-id")
-			q3=User.objects.filter(is_superuser=False)
+			q3=User.objects.filter(is_superuser=0)
+
 
 			if(request.POST.get("btn_profile")!=None):
-				print("button click works")
 				ans=admin_user_profile(request)
-				print(ans,"hello ::::::::::::::::::::::::::")
-				return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":q3,"ans":ans,"pag":"active in","display":"block;"})
+				employeeList=employee_view()
+				return render(request,"admin_home.html",{"id":request.POST['btn_profile'],"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"ans":ans,"pag":"active in","display":"block;"})
+
+			if(request.POST.get("btn_user_approve")!=None):
+				q4=tbl_profile.objects.get(emp_id=request.POST["btn_user_approve"])
+				q4.status="Approved"
+				q4.save()
+				employeeList=employee_view()
+				return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag":"active in"})
+
+			if(request.POST.get("btn_user_reject")!=None):
+				q4=tbl_profile.objects.get(emp_id=request.POST["btn_user_reject"])
+				q4.status="Rejected"
+				q4.save()
+				employeeList=employee_view()
+				return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag":"active in"})
 
 			if(request.POST.get("btn_approve")!=None):
-				print("before update")
 				q4=tbl_leave.objects.get(id=request.POST["btn_approve"])
 				q4.l_status="Approved"
 				q4.save()
-				print("after update")
 
 			if(request.POST.get("btn_reject")!=None):
-				print("before update")
 				q4=tbl_leave.objects.get(id=request.POST["btn_reject"])
 				q4.l_status="Rejected"
 				q4.l_r_reason=request.POST["reject_reason"]
 				q4.save()
-				print("after update")
 
 
 		except Exception as e:
 			print("Error ::::",e)
-			return render(request,"Usr_profile.html")
-
-		return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":q3,"pag1":"active in"})
+			return render(request,"admin_home.html")
+		employeeList=employee_view()
+		return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag1":"active in"})
 	else:
 		return redirect('login1')
 		
+def employee_view():
 
+	q4=tbl_profile.objects.filter(emp_auth="Staff")
+	employeeList = []
+	for i in q4:
+		emp=i.emp_id
+		q5=User.objects.get(id=emp)
+		empDct = {}
+		empDct['first_name'] = q5.first_name
+		empDct['last_name'] = q5.last_name
+		empDct['last_login'] = q5.last_login
+		empDct['emp_id'] = i.emp_id
+		empDct['username'] = q5.username
+		empDct['status'] = i.status
+		employeeList.append(empDct)
+	return employeeList
 def admin_user_profile(request):
-	# dic={}
-	print(request.POST)
-	print("enna kuzapam")
-	print(request.POST.get('btn_view'))
-	print("hello word")
+	# print("hello")
 	if(request.POST.get('btn_profile')!=None):
 		q1=tbl_profile.objects.filter(emp_id=request.POST['btn_profile'])
 		q=User.objects.filter(id=request.POST['btn_profile'])
@@ -146,29 +185,25 @@ def admin_user_profile(request):
 			name=i.first_name+" "+i.last_name
 
 		for i in q1:
-			ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/static/img/demoimg1.gif' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><and<label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
+			# print("1st")
+			ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/media/"+str(i.emp_img)+"' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br><label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
 
-	elif(request.POST.get('btn_view')!=None):
-		q=User.objects.filter(id=request.POST['btn_view'])
-		q1=tbl_profile.objects.filter(emp_id=request.POST['btn_view'])
-		for i in q:
-			name=i.first_name+" "+i.last_name
+	# elif(request.POST.get('btn_view')!=None):
+	# 	q=User.objects.filter(id=request.POST['btn_view'])
+	# 	q1=tbl_profile.objects.filter(emp_id=request.POST['btn_view'])
+	# 	for i in q:
+	# 		name=i.first_name+" "+i.last_name
 
-		for i in q1:
-			ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/static/img/demoimg1.gif' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br>			<label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
-
-	print("\nAnswer profile :",ans)
+	# 	for i in q1:
+	# 		print("2nd")
+	# 		ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/media/"+str(i.emp_img)+"' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br><label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
+	# print("hello1")
+	# print(ans)
 	return ans
-	# dic["ans"]=ans
-	# dic["status"]=True
-	# print(dic)
-	# jsondata=json.dumps(dic)
-	# return HttpResponse(jsondata,content_type="application/json")
+
 
 def user_home(request):
-	print("token 1")
 	if(userauth(request)):
-		print("token 3")
 
 		q=tbl_leave.objects.filter(l_status="Approved",emp_id=request.user.id).order_by("-id")
 		q1=tbl_leave.objects.filter(l_status="Pending",emp_id=request.user.id).order_by("-id")
@@ -184,7 +219,6 @@ def user_home(request):
 def userprofile(request):
 	if(userauth(request)):
 		try:
-			print(request.POST)
 			qq=User.objects.get(username=request.user.username)
 			empid=qq.id
 			tbl_profile.objects.get_or_create(emp_id=empid)
@@ -199,7 +233,6 @@ def userprofile(request):
 			quote=q1.emp_discriptin
 			typ=q1.emp_type
 			name1=fnam+" "+lnam
-			print(fnam,lnam,address,email,dob,number,quote,typ,name1,q1.emp_img)
 
 		except Exception as e:
 			print("Error ::::",e)
@@ -213,7 +246,6 @@ def userprofile(request):
 def user_profile_edit(request):
 	if(userauth(request)):
 		try:
-			# print("request.POST :::",request.POST)
 			qq=User.objects.get(username=request.user.username)
 			empid=qq.id
 			tbl_profile.objects.get_or_create(emp_id=empid)
@@ -232,7 +264,6 @@ def user_profile_edit(request):
 				q.emp_dob=dob
 				q.emp_email=email
 				q.emp_phone=number
-				print(number)
 				q.emp_address=address
 				q.emp_type=typ[0]
 				q.emp_discriptin=quote
@@ -242,7 +273,6 @@ def user_profile_edit(request):
 				if(fnam!="" and lnam!=""):
 					qq.first_name=fnam
 					qq.last_name=lnam
-					print(fnam,lnam)
 					qq.save()
 
 				if(request.FILES.get('img')):
@@ -269,7 +299,6 @@ def user_profile_edit(request):
 			quote=q1.emp_discriptin
 			typ=q1.emp_type
 			u_img=q1.emp_img
-			print(fnam,lnam,address,email,dob,number,quote,typ,name1)
 
 		except Exception as e:
 			print("error :::::::",e)
@@ -282,7 +311,6 @@ def user_profile_edit(request):
 def applay_leave(request):
 	if(userauth(request)):
 		lastleave,pending="",""
-		print(request.POST)
 		qq=User.objects.get(username=request.user.username)
 		empid=qq.id
 		fnam=qq.first_name
@@ -301,15 +329,18 @@ def applay_leave(request):
 
 			end_date=date(l_to.year,l_to.month,l_to.day)
 			start_date=date(l_from.year,l_from.month,l_from.day)
+			ll=tbl_leave.objects.filter(emp_id=empid,l_type=l_typ[0],l_year=datetime.today().year).aggregate(Sum("l_days"))
 			wekday=np.busday_count(start_date,end_date)+1
 			j=(end_date-start_date).days+1
-			if(l_typ[0] in ['Sick Leave','Maternity Leave','Marriage Leave']):
-				j=wekday
+			leave_days_t=int(ll["l_days__sum"])+int(j)
 
 			if(j>12 and l_typ[0] in ['Sick Leave']):
 				status="Pending"
 			elif(l_typ[0]=="Sick Leave"):
 				status="Approved"
+
+			if(l_typ[0] in ['Sick Leave','Maternity Leave','Marriage Leave']):
+				j=wekday
 
 			q1=tbl_leave.objects.create(emp_id=empid,emp_name=emp_name,l_type=l_typ[0],l_reason=l_reason,l_days=int(j),l_status=status,l_year=l_year,l_from=l_from,l_to=l_to)
 			q1.save()
@@ -318,10 +349,8 @@ def applay_leave(request):
 		s1=tbl_leave.objects.filter(emp_id=empid,l_status="Pending").order_by("-id")
 		s2=tbl_leave.objects.filter(emp_id=empid,l_status="Approved").order_by("-id")[:1]
 		for i in s2:
-			print(i.l_days,i.id)
 			lastleave=i.l_type+": From "+str(i.l_from)+" To "+str(i.l_to)+"<br>&nbsp&nbsp "+i.l_reason+" For "+str(i.l_days)+" Days"
 		for i in s1:
-			print(i.l_days,i.id)
 			pending=pending+i.l_type+": From "+str(i.l_from)+" To "+str(i.l_to)+"<br>&nbsp&nbsp "+i.l_reason+"<br> For "+str(i.l_days)+" Days<hr>"
 
 		s3=tbl_profile.objects.get(emp_id=empid)
@@ -378,14 +407,12 @@ def msg(request):
 		ans="You are Applying for "+str(j)+" days Leave from "+str(datetime.strftime(l_from,'%d-%m-%Y'))+" to "+str(datetime.strftime(l_to,'%d-%m-%Y'))+"<br><hr>Reason :"+l_reason+"<hr>Is That Correct ?"
 		dic["status"]=True
 	dic["ans"]=ans
-	print(dic)
 	jsondata=json.dumps(dic)
 	return HttpResponse(jsondata,content_type="application/json")
 
 def leave_history(request):
 	if(userauth(request)):
 
-		print(request.POST)
 		qq=User.objects.get(username=request.user.username)
 		empid=qq.id
 		fnam=qq.first_name

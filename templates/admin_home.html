@@ -52,11 +52,15 @@
             <div class="modal-body" id="message" style="text-align: center;">
                 {{ans|safe}}
             </div>
-            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_submit" onclick="document.getElementById('messagebox').style.display='none';">OK</button>
+            <!-- <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_submit" onclick="document.getElementById('messagebox').style.display='none';">OK</button> -->
+            <form method="POST">
+                {%csrf_token%}
+                <button class="btn btn-success" name="btn_user_approve" value="{{id}}">Approve</button>
+                <button class="btn btn-danger" name="btn_user_reject" value="{{id}}">Reject</button>
+            </form>
         </div>
     </div>
 </div>
-
 
 <div class="modal fade in" id="reject_box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
     <div class="modal-dialog">
@@ -120,11 +124,11 @@
                         <div class="panel panel-default" style="border-radius: 20px;">
                             <div class="panel-body">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#Leaves" data-toggle="tab">Leaves For Approveel</a>
+                                    <li class="{{pag1}}"><a href="#Leaves" data-toggle="tab">Leaves For Approveel</a>
                                     </li>
                                     <li class=""><a href="#Rejected" data-toggle="tab">Rejected Leaves</a>
                                     </li>
-                                    <li class=""><a href="#Employes" data-toggle="tab">Employes</a>
+                                    <li class="{{pag}}"><a href="#Employes" data-toggle="tab">Employes</a>
                                     </li>
                                     <li class=""><a href="#Approved" data-toggle="tab">Approved</a>
                                     </li>
@@ -167,20 +171,24 @@
                                     <div class="tab-pane fade {{pag}}" id="Employes">
                                         <table>
                                             <tr>
+                                                <th>Employee ID</th>
                                                 <th>Name</th>
                                                 <th>User Name</th>
                                                 <th>Last Login</th>
+                                                <th>Status</th>
                                                 <th></th>
                                             </tr>
                                             {% for i in employes %}
                                             <tr>
+                                                <td>{{i.emp_id}}</td>
                                                 <td>{{i.first_name}} {{i.last_name}}</td>
                                                 <td>{{i.username}}</td>
                                                 <td>{{i.last_login}}</td>
+                                                <td>{{i.status}}</td>
                                                 <td>
                                                     <form method="POST">
                                                         {% csrf_token%}
-                                                        <button class="form-control btn-primary" name="btn_profile" value="{{i.id}}">View</button>
+                                                        <button class="form-control btn-primary" name="btn_profile" value="{{i.emp_id}}">View</button>
                                                     </form>
                                                 </td>
                                             </tr>
