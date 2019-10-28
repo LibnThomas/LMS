@@ -25,7 +25,9 @@ SECRET_KEY = '0e^t4acl714coj=o4bz#11dqkek%qbi8jrxk3(1xehi3*8kc6m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'lmsoo1.herokuapp.com',
+]
 
 
 # Application definition
@@ -86,6 +88,8 @@ DATABASES = {
     }
 }
 
+prod_db = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(prod_db)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
