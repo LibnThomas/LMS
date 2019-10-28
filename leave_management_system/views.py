@@ -332,7 +332,10 @@ def applay_leave(request):
 			ll=tbl_leave.objects.filter(emp_id=empid,l_type=l_typ[0],l_year=datetime.today().year).aggregate(Sum("l_days"))
 			wekday=np.busday_count(start_date,end_date)+1
 			j=(end_date-start_date).days+1
-			leave_days_t=int(ll["l_days__sum"])+int(j)
+			if(ll["l_days__sum"]!=None):
+				leave_days_t=int(ll["l_days__sum"])+int(j)
+			else:
+				leave_days_t=int(j)
 
 			if(j>12 and l_typ[0] in ['Sick Leave']):
 				status="Pending"
