@@ -2,7 +2,7 @@
 <!-- k8t91zywo7 -->
 <html>
 <head>
-	<title>Applay Leave</title>
+	<title>Home</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/static/user_assets/css/bootstrap.css" rel="stylesheet" />
@@ -132,8 +132,10 @@
             		<!-- {%csrf_token%} -->
                     <div class="row">
                         <div class="col-md-6">
-                            Total Number of Leaves Taken in This current Year : <label style="color: green;">{{l_acc|safe}}</label><br>
-                            Total Number of Leaves Rejected in This current Year : <label style="color: red;">{{l_rej|safe}}</label>
+                            Total Number of Leaves in current Year : <label style="color: green;"> 50</label><br>
+                            Total Number of Leaves Pending in current Year : <label style="color: blue;">{{l_pend|safe}}</label><br>
+                            Total Number of Leaves Taken in current Year : <label style="color: green;">{{l_acc|safe}}</label><br>
+                            Total Number of Leaves Rejected in current Year : <label style="color: red;">{{l_rej|safe}}</label>
                         </div>
                         <div class="col-md-6">
                             <div  style="background: linear-gradient(to top left, #4c9285 -21%, #9dd6ff 123%);border-radius: 10px;padding: 10px;margin-right: 5px;height: 200px;overflow: auto;">

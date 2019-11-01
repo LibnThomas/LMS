@@ -211,8 +211,14 @@ def user_home(request):
 		q3=tbl_leave.objects.filter(l_status="Approved",emp_id=request.user.id).aggregate(Sum("l_days"))
 		q4=tbl_leave.objects.filter(l_status="Rejected",emp_id=request.user.id).aggregate(Sum("l_days"))
 		q5=tbl_profile.objects.get(emp_id=request.user.id)
+		q6=tbl_leave.objects.filter(emp_id=request.user.id,l_status="Approved").aggregate(Sum("l_days"))
+		print(q6["l_days__sum"])
+		if(q6["l_days__sum"]!=None):
+			pen_leave=50 - int(q6["l_days__sum"])
+		else:
+			pen_leave=50
 
-		return render(request,"Usr_Home.html",{"u_img":q5.emp_img,"name":request.user.first_name+" "+request.user.last_name,"pending":q1,"accepted":q,"reject":q2,"l_acc":q3["l_days__sum"],"l_rej":q4["l_days__sum"]})
+		return render(request,"Usr_Home.html",{"l_pend":pen_leave,"u_img":q5.emp_img,"name":request.user.first_name+" "+request.user.last_name,"pending":q1,"accepted":q,"reject":q2,"l_acc":q3["l_days__sum"],"l_rej":q4["l_days__sum"]})
 	else:
 		return redirect('login1')
 
