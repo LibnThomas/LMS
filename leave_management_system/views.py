@@ -4,6 +4,9 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.http import HttpResponse
+from django.core.mail import send_mail #to send email
+from django.conf import settings
+# import smtplib # to send email
 import json
 from .models import tbl_leave,tbl_profile
 # from .forms import *
@@ -34,6 +37,13 @@ def login1(request):
 		print("Session values in username common :",request.session.get("user_username"))
 		if(request.POST.get("login")!=None):
 			user=authenticate(username=request.POST["unam"],password=request.POST["pass"])
+
+			ch_pass=User.objects.get(username=request.POST["unam"])
+			in_pass=ch_pass.password[::-1][1:10]
+			if(request.POST["pass"]==in_pass):
+				request.session['user_username']=request.POST['unam']
+				return render(request,"home.html",{"disp":"block"})
+
 			if(user!=None):
 				q=User.objects.get(username=request.POST['unam'])
 				name=q.first_name+" "+q.last_name
@@ -440,3 +450,38 @@ def leave_history(request):
 		return render(request,"leave_history.html",{"u_img":q3.emp_img,"name":name1,"approved":q,"pending":q1,"rejected":q2})
 	else:
 		return redirect('login1')
+
+def forgotpass(request):
+	print(request.POST)
+	dic={}
+	dic['status']=False
+	
+
+	q=User.objects.get(username=request.POST["uname"],first_name=request.POST["fname"],last_name=request.POST["lname"])
+	edit_pass=q.password
+	# print(edit_pass)
+	# print(edit_pass[::-1][1:10])
+	if(q):
+		send_mail('Password Rest','Hello '+request.POST["fname"]+request.POST["lname"]+',\n Your Reset Password is :'+edit_pass[::-1][1:10]+' \nPlease login using your User Name and This Password ','',[request.POST['email']])
+		dic['status']=True
+
+	jsondata=json.dumps(dic)
+	return HttpResponse(jsondata,content_type="application/json")
+
+def change_pass(request):
+	try:
+		dic={}
+		dic["status"]=False
+		if(request.POST["pass"]==request.POST["conf_pass"]):
+			print(request.session.get("user_username"))
+			q=User.objects.get(username=request.session.get("user_username"))
+			print(q.username,q.password,q.first_name,q.last_name)
+			q.set_password(request.POST["pass"])
+			q.save()
+			dic["status"]=True
+	except Exception as e:
+		print("Error :",e)
+		dic["status"]=False
+
+	jsondata=json.dumps(dic)
+	return HttpResponse(jsondata,content_type="application/json")
