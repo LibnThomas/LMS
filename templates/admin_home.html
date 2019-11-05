@@ -45,14 +45,13 @@
 <!-- ======================================== message box ======================================================================== -->
 
 <div class="modal fade in" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display: {{display}}">
-    <div class="modal-dialog">
-        <div class="modal-content modal-footer modal-header" style="background: linear-gradient(to top left, #a0ffc3 -21%, #79d4ea 123%);border-radius: 10px;top: 60px;">
+    <div class="modal-dialog" style="width: 70%;">
+        <div class="modal-content modal-footer modal-header" style="border-radius: 10px;top: 60px;width: 100%;">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="document.getElementById('messagebox').style.display='none';">&times;</button>
             <h4 class="modal-title" id="myModalLabel" style="text-align: center;"><b>Profile</b></h4>
             <div class="modal-body" id="message" style="text-align: center;">
                 {{ans|safe}}
             </div>
-            <!-- <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_submit" onclick="document.getElementById('messagebox').style.display='none';">OK</button> -->
             <form method="POST">
                 {%csrf_token%}
                 <button class="btn btn-success" name="btn_user_approve" value="{{id}}">Approve</button>
@@ -115,7 +114,7 @@
             </ul>
         </nav>
 
-        <div style="background: #22c0cc;">
+        <div style="background: #24383a;">
             <div style="border-radius: 10px;top:100px;">
             	<div class="row" style="padding-top: 50px;"></div>
             	<hr style="border-top: 3px double #8c8b8b;">
@@ -204,6 +203,7 @@
                                                 <th>From</th>
                                                 <th>To</th>
                                                 <th>Days</th>
+                                                <th>Reason</th>
                                                 <th>Reason for Rejection</th>
                                             </tr>
                                             {% for i in rejected %}
@@ -227,6 +227,7 @@
                                                 <th>From</th>
                                                 <th>To</th>
                                                 <th>Days</th>
+                                                <th>Reason</th>
                                             </tr>
                                             {% for i in approved %}
                                             <tr>

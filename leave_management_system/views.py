@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,logout
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from django.db.models import Sum
+from django.db.models import Sum,Q
 from django.http import HttpResponse
 from django.core.mail import send_mail #to send email
 from django.conf import settings
@@ -38,21 +38,12 @@ def login1(request):
 		if(request.POST.get("login")!=None):
 			user=authenticate(username=request.POST["unam"],password=request.POST["pass"])
 
-			ch_pass=User.objects.get(username=request.POST["unam"])
-			in_pass=ch_pass.password[::-1][1:10]
-			if(request.POST["pass"]==in_pass):
-				request.session['user_username']=request.POST['unam']
-				return render(request,"home.html",{"disp":"block"})
-
 			if(user!=None):
 				q=User.objects.get(username=request.POST['unam'])
 				name=q.first_name+" "+q.last_name
 				q2=tbl_profile.objects.get(emp_id=q.id)
 				if(q2.emp_auth=="Manager"):
 					if(q2.status=="Approved"):
-						# if(request.session.get("user_username")!=None):
-						# 	return render(request,"home.html",{"msg":"One Session is already Running"})
-						# else:
 						request.session['user_username']=name
 					else:
 						return render(request,"home.html",{"msg":"Your Request is "+q2.status})
@@ -61,24 +52,28 @@ def login1(request):
 					return redirect("admin_home")
 				elif(q2.emp_auth=="Staff"):
 					if(q2.status=="Approved"):
-						# if(request.session.get("user_username")!=None):
-						# 	return render(request,"home.html",{"msg":"One Session is already Running"})
-						# else:
 						request.session['user_username']=name
 					else:
 						return render(request,"home.html",{"msg":"Your Request is "+q2.status})
 					login(request,user)
 					return redirect("user_home")
 				elif(User.is_superuser):
-					# if(request.session.get("user_username")!=None):
-					# 	return render(request,"home.html",{"msg":"One Session is already Running"})
-					# else:
 					request.session['user_username']=name
 					login(request,user)
 					return redirect("Main_Admin")
 
 			else:
-				return render(request,"home.html",{"msg":"Incorrect User Name/Password"})
+				try:
+					ch_pass=User.objects.get(username=request.POST["unam"])
+					in_pass=ch_pass.password[::-1][1:10]
+					if(request.POST["pass"]==in_pass):
+						request.session['user_username']=request.POST['unam']
+						return render(request,"home.html",{"disp":"block"})
+				except:
+					return render(request,"home.html",{"msg":"Incorrect User Name/Password"})
+
+
+			
 
 		if(request.POST.get("btn_signin")!=None):
 			try:
@@ -90,7 +85,7 @@ def login1(request):
 					q=User.objects.create_user(username=request.POST["uname"],password=request.POST["pass"],first_name=request.POST["fname"],last_name=request.POST["lname"])
 					q.save()
 					qq=User.objects.get(username=request.POST["uname"])
-					q1=tbl_profile.objects.create(emp_id=qq.id,emp_auth=request.POST.getlist("stafftype",None)[0],status="Pending")
+					q1=tbl_profile.objects.create(emp_id=qq.id,emp_auth=request.POST.getlist("stafftype",None)[0],status="Pending",emp_manager=request.POST.getlist("staffmanager",None)[0],emp_email=request.POST["uemail"])
 					q1.save()
 				else:
 					return render(request,"home.html",{"msg":"Password Doesn't Match"})
@@ -116,7 +111,7 @@ def p_admin(request):
 		ans=""
 		for i in q:
 			q1=User.objects.get(id=i.emp_id)
-			ans=ans+"<tr style='border-radius: 10px;'><td>"+q1.first_name+q1.last_name+"</td><td>"+q1.username+"</td><td>"+i.emp_auth+"</td><td>"+str(q1.date_joined)+"</td><td><button class='form-control btn-success' name='btn_approve' value='"+str(i.id)+"'>Approve</button></td><td><button class='form-control btn-danger' name='btn_reject' value='"+str(i.id)+"'>Reject</button></td></tr>"
+			ans=ans+"<tr style='border-radius: 10px;'><td>"+q1.first_name+" "+q1.last_name+"</td><td>"+q1.username+"</td><td>"+i.emp_auth+"</td><td>"+str(q1.date_joined.strftime("%d-%m-%Y"))+"</td><td><button class='form-control btn-success' name='btn_approve' value='"+str(i.id)+"'>Approve</button></td><td><button class='form-control btn-danger' name='btn_reject' value='"+str(i.id)+"'>Reject</button></td></tr>"
 
 		return render(request,'Main_Admin.html',{"ans":ans})
 	else:
@@ -125,29 +120,29 @@ def p_admin(request):
 def admin_home(request):
 	if(userauth(request)):
 		try:
-			q=tbl_leave.objects.filter(l_status="Approved").order_by("-id")
-			q1=tbl_leave.objects.filter(l_status="Pending").order_by("-id")
-			q2=tbl_leave.objects.filter(l_status="Rejected").order_by("-id")
-			q3=User.objects.filter(is_superuser=0)
-
+			manager=request.user.first_name+" "+request.user.last_name
+			qq=tbl_profile.objects.filter(emp_manager=manager)
+			q=l_admin_home(qq,"approved")
+			q1=l_admin_home(qq,"Pending")
+			q2=l_admin_home(qq,"Rejected")
 
 			if(request.POST.get("btn_profile")!=None):
 				ans=admin_user_profile(request)
-				employeeList=employee_view()
+				employeeList=employee_view(request)
 				return render(request,"admin_home.html",{"id":request.POST['btn_profile'],"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"ans":ans,"pag":"active in","display":"block;"})
 
 			if(request.POST.get("btn_user_approve")!=None):
 				q4=tbl_profile.objects.get(emp_id=request.POST["btn_user_approve"])
 				q4.status="Approved"
 				q4.save()
-				employeeList=employee_view()
+				employeeList=employee_view(request)
 				return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag":"active in"})
 
 			if(request.POST.get("btn_user_reject")!=None):
 				q4=tbl_profile.objects.get(emp_id=request.POST["btn_user_reject"])
 				q4.status="Rejected"
 				q4.save()
-				employeeList=employee_view()
+				employeeList=employee_view(request)
 				return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag":"active in"})
 
 			if(request.POST.get("btn_approve")!=None):
@@ -165,14 +160,30 @@ def admin_home(request):
 		except Exception as e:
 			print("Error ::::",e)
 			return render(request,"admin_home.html")
-		employeeList=employee_view()
+		employeeList=employee_view(request)
 		return render(request,"admin_home.html",{"approved":q,"pending":q1,"rejected":q2,"employes":employeeList,"pag1":"active in"})
 	else:
 		return redirect('login1')
-		
-def employee_view():
 
-	q4=tbl_profile.objects.filter(emp_auth="Staff")
+def l_admin_home(qq,ty):
+	lis=[]
+	for j in qq:
+		val=tbl_leave.objects.filter(emp_id=j.emp_id,l_status=ty)
+		for i in val:
+			dic={}
+			dic["emp_name"]=i.emp_name
+			dic["l_type"]=i.l_type
+			dic["l_from"]=i.l_from
+			dic["l_to"]=i.l_to
+			dic["l_reason"]=i.l_reason
+			dic["l_days"]=i.l_days
+			dic["id"]=i.id
+			dic["l_r_reason"]=i.l_r_reason
+			lis.append(dic)
+	return(lis)
+		
+def employee_view(request):
+	q4=tbl_profile.objects.filter(emp_auth="Staff",emp_manager=request.user.first_name+" "+request.user.last_name)
 	employeeList = []
 	for i in q4:
 		emp=i.emp_id
@@ -186,8 +197,23 @@ def employee_view():
 		empDct['status'] = i.status
 		employeeList.append(empDct)
 	return employeeList
+
+def manager_view(request):
+	dic={}
+	ans=""
+	q4=tbl_profile.objects.filter(emp_auth="Manager")
+	for i in q4:
+		manag=i.emp_id
+		q5=User.objects.get(id=manag)
+		ans=ans+"<option>"+q5.first_name+" "+q5.last_name+"</option>"
+	dic["status"]=True
+	dic["ans"]=ans
+	print(dic)
+	jsondata=json.dumps(dic)
+	return HttpResponse(jsondata,content_type="application/json")
+
+
 def admin_user_profile(request):
-	# print("hello")
 	if(request.POST.get('btn_profile')!=None):
 		q1=tbl_profile.objects.filter(emp_id=request.POST['btn_profile'])
 		q=User.objects.filter(id=request.POST['btn_profile'])
@@ -195,20 +221,7 @@ def admin_user_profile(request):
 			name=i.first_name+" "+i.last_name
 
 		for i in q1:
-			# print("1st")
-			ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/media/"+str(i.emp_img)+"' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br><label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
-
-	# elif(request.POST.get('btn_view')!=None):
-	# 	q=User.objects.filter(id=request.POST['btn_view'])
-	# 	q1=tbl_profile.objects.filter(emp_id=request.POST['btn_view'])
-	# 	for i in q:
-	# 		name=i.first_name+" "+i.last_name
-
-	# 	for i in q1:
-	# 		print("2nd")
-	# 		ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/media/"+str(i.emp_img)+"' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br><label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>: "+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>: "+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>: "+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>: "+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>: "+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>: "+i.emp_discriptin+"</label></div></div></div></div>"
-	# print("hello1")
-	# print(ans)
+			ans="<div class='row'><div class='row'><div class='col-md-12' style='text-align: center;align-content: center;'><img src='/media/"+str(i.emp_img)+"' style='height: 100px;width: 100px;border-radius: 50%;object-fit: cover;background: linear-gradient(to top left, #ffffff -21%, #00BCD4  123%);'><br><label style='text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;'>"+name+"</label></div></div></div><hr><div class='row'><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Address</div><div class='col-md-9'><label>"+i.emp_address+"</label></div></div><div class='row'><div class='col-md-3'>DOB</div><div class='col-md-9'><label>"+str(i.emp_dob)+"</label></div></div><div class='row'><div class='col-md-3'>Email</div><div class='col-md-9'><label>"+i.emp_email+"</label></div></div><div class='row'><div class='col-md-3'>Phone</div><div class='col-md-9'><label>"+str(i.emp_phone)+"</label></div></div></div><div class='col-md-6' style='padding-left: 50px;padding-top: 20px;font-weight: bold;text-align: left;'><div class='row'><div class='col-md-3'>Type</div><div class='col-md-9'><label>"+i.emp_type+"</label></div></div><div class='row'><div class='col-md-3'>Quote</div><div class='col-md-9'><label>"+i.emp_discriptin+"</label></div></div></div></div>"
 	return ans
 
 
@@ -456,14 +469,14 @@ def forgotpass(request):
 	dic={}
 	dic['status']=False
 	
-
-	q=User.objects.get(username=request.POST["uname"],first_name=request.POST["fname"],last_name=request.POST["lname"])
-	edit_pass=q.password
-	# print(edit_pass)
-	# print(edit_pass[::-1][1:10])
-	if(q):
-		send_mail('Password Rest','Hello '+request.POST["fname"]+request.POST["lname"]+',\n Your Reset Password is :'+edit_pass[::-1][1:10]+' \nPlease login using your User Name and This Password ','',[request.POST['email']])
-		dic['status']=True
+	q=User.objects.filter(username=request.POST["uname"])
+	for i in q:
+		qq=tbl_profile.objects.get(emp_id=i.id)
+		if(qq.emp_email==request.POST["email"]):
+			edit_pass=i.password
+			if(q):
+				send_mail('Password Rest','Hello '+i.first_name+" "+i.last_name+',\n Your Reset Password is :'+edit_pass[::-1][1:10]+' \nPlease login using your User Name and This Password ','',[request.POST['email']])
+				dic['status']=True
 
 	jsondata=json.dumps(dic)
 	return HttpResponse(jsondata,content_type="application/json")

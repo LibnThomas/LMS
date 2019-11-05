@@ -13,6 +13,7 @@ urlpatterns=[
 	path('admin_user_profile',views.admin_user_profile,name="admin_user_profile"),
 	path('forgotpass',views.forgotpass,name="forgotpass"),
 	path('change_pass',views.change_pass,name="change_pass"),
+	path('manager_view',views.manager_view,name="manager_view"),
 	path('User_profile/User_profile_edit',views.user_profile_edit,name="userprofile_edit"),
 	path('User_profile/Applay_Leave',views.applay_leave,name="applay_leave"),
 	path('User_profile/msg',views.msg,name="msg"),

@@ -101,7 +101,7 @@
             </div>
         </nav>
         <div id="page-wrapper">
-            <div id="page-inner" style="background: linear-gradient(to top left, #23c1cd -21%, #25c3ce 123%);border-radius: 10px;top:100px;">
+            <div id="page-inner" style="background: #ffffff;border-radius: 10px;top:100px;">
 
 
             	<div class="row">
@@ -110,11 +110,11 @@
             			<label style="text-shadow: 1px 1px 1px black;font-weight: bolder;font-size: 20px;">{{name|safe}}</label>
             		</div>
             		<div class="col-md-8">
-            			<div style="background: linear-gradient(to bottom right, #dddfe6 -21%, #00c4ff 123%);border-radius: 10px;padding: 5px;margin-bottom: 10px;margin-top: 20px;box-shadow: 3px 2px 2px black;height: 120px;overflow: auto;">
+            			<div style="background: #ffffff;border-radius: 10px;padding: 5px;margin-bottom: 10px;margin-top: 20px;box-shadow: 2px 2px 5px black;height: 120px;overflow: auto;">
             				<label><u>Pending Leaves</u></label><br>
             				<label style="margin-left: 10px;">{{pending|safe}}</label>
             			</div>
-            			<div style="background: linear-gradient(to bottom right, #0144ff9e -21%, #22fddf 123%);border-radius: 10px;padding: 5px;margin-bottom: 10px;box-shadow: 3px 2px 2px black;">
+            			<div style="background: #ffffff;border-radius: 10px;padding: 5px;margin-bottom: 10px;box-shadow: 2px 2px 5px black;">
             				<label><u>Last Leave</u></label><br>
             				<label style="margin-left: 10px;">{{lastleave|safe}}</label>
             			</div>
@@ -153,7 +153,7 @@
 	            			<div style="text-align: center;"><br><label style="font-size: 15px;font-weight: bolder;text-shadow: 1px 1px 1px black;">History</label></div>
 	            			<div class="row" style="margin:4px 5px;height: 250px; overflow: auto;border-radius: 10px;">
 	            				{% for i in q %}
-		            			<div style='background: linear-gradient(to bottom right, #66ffcc -21%, #2f669e 123%);border-radius: 10px;padding: 7px;margin-bottom: 10px;box-shadow: 2px 5px 5px black;'>
+		            			<div style='background: #ffffff;border-radius: 10px;padding: 5px;margin-bottom: 10px;box-shadow: 0px 0px 3px black;'>
 		            				<label style='font-weight: bolder;text-shadow: 0px 0px .5px black;'>{{i.l_type}} : From {{ i.l_from }} to {{ i.l_to }}</label><br>
 		            				<label style='margin-left: 10px;'>{{ i.l_reason }}</label>
 		            			</div>

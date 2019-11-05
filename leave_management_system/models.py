@@ -43,6 +43,7 @@ class tbl_profile(models.Model):
 	emp_last_edit=models.DateField(default=datetime.date.today)
 	emp_auth=models.CharField(max_length=10)
 	status=models.CharField(max_length=10)
+	emp_manager=models.CharField(max_length=50)
 	# emp_user_auth=models.OneToOneField(User, )
 
 	class Meta:
