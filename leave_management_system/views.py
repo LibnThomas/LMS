@@ -69,6 +69,8 @@ def login1(request):
 					if(request.POST["pass"]==in_pass):
 						request.session['user_username']=request.POST['unam']
 						return render(request,"home.html",{"disp":"block"})
+					else:
+						return render(request,"home.html",{"msg":"Incorrect User Name/Password"})
 				except:
 					return render(request,"home.html",{"msg":"Incorrect User Name/Password"})
 
