@@ -15,6 +15,7 @@ import os
 import datetime
 from datetime import date,datetime
 from django.utils.timezone import now
+# just a comment
 
 def userauth(request):
 	print(request.POST)
